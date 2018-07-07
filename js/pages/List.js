@@ -97,6 +97,13 @@ export default class List extends React.Component {
     return (
       <View>
         <Text>This is list page!</Text>
+        <Button 
+            title = "Go Back"
+            onPress = { () => {
+                //button go back to homepage
+                navigation.goBack();
+            }}
+        />
         <SwipeableFlatList
           //data source of the flatlist
           //you can import data directly as data = {CITIES}
