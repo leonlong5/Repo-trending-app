@@ -8,7 +8,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import MyPage from '../pages/MyPage';
 import TrendingPage from '../pages/TrendingPage'
 import RepositoryDetail from '../pages/RepositoryDetail'
-
+import CustomKeyPage from '../pages/CustomKeyPage'
+import NavigationBar from '../common/NavigationBar'
 //bottom tab navigator
 export const AppTabNavigator = createBottomTabNavigator({
     HomePage: {
@@ -115,6 +116,18 @@ export const AppStackNavigator = createStackNavigator({
         screen: TrendingPage,
         navigationOptions: {
             title: "Trending Page"
+        }
+    },
+    CustomKeyPage: {
+        screen: CustomKeyPage,
+        navigationOptions: {
+            title:"CustomKeyPage"
+        }
+    },
+    NavigationBar: {
+        screen: NavigationBar,
+        navigationOptions: {
+            title: 'NavigationBar'
         }
     }
 },{

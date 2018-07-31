@@ -20,23 +20,25 @@ export default class RepositoryDetail extends Component {
     constructor(props) {
         super(props);
         const { navigation } = this.props;
-        const itemId = navigation.getParam('itemId', 'NO-ID');
-        const otherParam = navigation.getParam('otherParam', 'some default value');
+        const repoName = navigation.state.params.name
+        const url = TRENDING_URL + repoName
         this.state = {
-            // url: this.url,
+            repourl: url,
         }
     }
     render() {
         return (
             <View style={styles.container}>
-                <Text>Details Screen</Text>
-                {/* <Text>itemId: {JSON.stringify(itemId)}</Text>
-                <Text>otherParam: {JSON.stringify(otherParam)}</Text> */}
+                <TouchableOpacity onPress = {() => this.props.navigation.goBack()}>
+                    <View style = {styles.nav}>
+                        <Text style = {{color: 'white'}}>Go back</Text>
+                    </View>
+                </TouchableOpacity>
+                <WebView
+                    source={{uri: this.state.repourl}}
+                    style={{marginTop:10}}
+                    />
                 
-                <Button
-                title="Go back"
-                onPress={() => this.props.navigation.goBack()}
-                />
             </View>
 
         );
@@ -48,4 +50,11 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff',
     },
+    nav: {
+        paddingTop: 30,
+        paddingBottom:10,
+        backgroundColor: "#2196F2",
+        alignItems: 'center', 
+        justifyContent: 'center', 
+    }
 })

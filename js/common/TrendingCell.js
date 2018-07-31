@@ -19,8 +19,13 @@ export default class TrendingCell extends Component {
       return (
           <TouchableOpacity style={styles.container}>
             <View style={styles.item} id={data.id}>
-                <Text style={styles.title}>{data.fullName} ;</Text>
-                <Text style={styles.description}>Description: {data.description}</Text>
+                <Text 
+                    onPress={() =>
+                        this.props.navigation.navigate('RepositoryDetail',{
+                            name: data.fullName
+                        })
+                    }
+                    style={styles.title}>{data.fullName} ;</Text>
                 <HTMLView
                         value={description}
                         stylesheet={{
@@ -48,12 +53,6 @@ export default class TrendingCell extends Component {
                     <Image style={styles.star} source={require('../../res/images/ic_star.png')}/>
                 </View>
             </View>
-            <Button
-            title="Go to Details..."
-            onPress={() =>
-                this.props.navigation.navigate('RepositoryDetail')
-            }
-            />
         </TouchableOpacity>
        );
     }
@@ -83,7 +82,7 @@ export default class TrendingCell extends Component {
         marginTop: 10
     },
     title: {
-        fontSize: 16,
+        fontSize: 18,
         marginBottom: 5,
         color:'#212121'
     },

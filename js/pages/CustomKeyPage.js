@@ -2,21 +2,25 @@ import React from 'react';
 import { StyleSheet, Text, View, Button} from 'react-native';
 import NavigationBar from '../common/NavigationBar'
 
-export default class MyPage extends React.Component {
+export default class CustomKeyPage extends React.Component {
   render() {
       //get navigation from props
-      const { navigation } = this.props;
+    const { navigation } = this.props;
     return (
       <View style={styles.container}>
         <NavigationBar
-          title='My profle page!'
+          title='CustomKey page!'
+          LeftButton = "Back"
+          RightButton = "Save"
+          navigation = {navigation}
         />
-        <Button
-            title="CustomKeyPage"
-            onPress={() =>
-                this.props.navigation.navigate('CustomKeyPage')
-            }
-            />
+        <Button 
+            title = "Go Back"
+            onPress = { () => {
+                //button go back to homepage
+                navigation.goBack();
+            }}
+        />
       </View>
     );
   }
@@ -27,6 +31,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    margin: 0
   },
 });
