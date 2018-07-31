@@ -5,6 +5,9 @@ import HomePage from '../pages/HomePage';
 import List from '../pages/List'
 import About from '../pages/About'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import MyPage from '../pages/MyPage';
+import TrendingPage from '../pages/TrendingPage'
+import RepositoryDetail from '../pages/RepositoryDetail'
 
 //bottom tab navigator
 export const AppTabNavigator = createBottomTabNavigator({
@@ -17,6 +20,20 @@ export const AppTabNavigator = createBottomTabNavigator({
             tabBarIcon: ({tintColor, focused})=>(
                 <Ionicons
                     name = {focused ? 'ios-home' : 'ios-home-outline'}
+                    size = {26}
+                    style = {{color: tintColor}}
+                />
+
+            ),
+        }
+    },
+    TrendingPage: {
+        screen: TrendingPage,
+        navigationOptions:{
+            tabBarLabel: 'TrendingPage',
+            tabBarIcon: ({tintColor, focused})=>(
+                <Ionicons
+                    name = {focused ? 'ios-list' : 'ios-list-outline'}
                     size = {26}
                     style = {{color: tintColor}}
                 />
@@ -38,10 +55,10 @@ export const AppTabNavigator = createBottomTabNavigator({
             ),
         }
     },
-    About: {
-        screen: About,
+    MyPage: {
+        screen: MyPage,
         navigationOptions:{
-            tabBarLabel: 'About',
+            tabBarLabel: 'My',
             tabBarIcon: ({tintColor, focused})=>(
                 <Ionicons
                     name = {focused ? 'ios-people' : 'ios-people-outline'}
@@ -57,6 +74,13 @@ export const AppTabNavigator = createBottomTabNavigator({
 
 //stack Navigator
 export const AppStackNavigator = createStackNavigator({
+    AppTabNavigator: {
+        screen: AppTabNavigator,
+        headerMode: 'none',
+        navigationOptions: {
+            headerVisible: false,
+        }
+    },
     HomePage: {
         screen: HomePage,
         navigationOptions: {
@@ -65,9 +89,9 @@ export const AppStackNavigator = createStackNavigator({
     },
     List: {
         screen : List,
-        navigationOptions: ({
+        navigationOptions: {
             title: 'List'
-        }) 
+        }
     },
     About: {
         screen : About,
@@ -75,10 +99,28 @@ export const AppStackNavigator = createStackNavigator({
             title: "About"
         }
     },
+    RepositoryDetail: {
+        screen: RepositoryDetail,
+        navigationOptions: {
+            title: "Repository Detail"
+        }
+    },
     TabNav: {
         screen: AppTabNavigator,
         navigationOptions: {
             title: 'Home page with tab nav'
         }
+    },
+    TrendingPage: {
+        screen: TrendingPage,
+        navigationOptions: {
+            title: "Trending Page"
+        }
+    }
+},{
+    initialRouteName: "AppTabNavigator",
+    headerMode: 'none',
+    navigationOptions: {
+        headerVisible: false,
     }
 })

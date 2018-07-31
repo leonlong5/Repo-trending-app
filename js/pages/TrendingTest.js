@@ -1,36 +1,47 @@
 import React,{Component} from 'react';
 import { StyleSheet, Text, View, Button, TextInput,ScrollView, FlatList, RefreshControl, ActivityIndicator, SwipeableFlatList, TouchableHighlight} from 'react-native';
-import DataRepository from '../expand/dao/DataRepository'
-import ScrollableTabView, {ScrollableTabBar} from 'react-native-scrollable-tab-view'
-import RepositoryCell from '../common/RepositoryCell'
+import GitHubTrending from 'GitHubTrending'
 
-const URL = 'https://api.github.com/search/repositories?q='
-const QUERY_STR =  '&sort=stars';
-export default class HomePage extends Component {
+const URL = "https://github.com/trending/";
+export default class HTrendingTest extends Component {
   constructor(props) {
     super(props);
+    this.tredning = new GitHubTrending();
     this.state = {
       text: '', 
-      data: '',
+      result: '',
     };
+  }
+
+  onLoad(){
+    let url = URL+this.text
+    this.tredning.fetchTrending(url)
+        .then(result=>{
+            this.setState({
+                result: JSON.stringify(result),
+            })
+        })
+        .catch(eror=>{
+            
+        })
   }
 
   render() {
     const navigation= this.props.navigation;
     return (
       <View style={styles.container}>
-        <Text style={styles.header}>Popular</Text>
-        <ScrollableTabView 
-          style={styles.tabView} 
-          tabBarBackgroundColor="#2196F3" 
-          tabBarInactiveTextColor="mintcream" 
-          tabBarActiveTextColor="white"
-          tabBarUnderlineStyle={{backgroundColor: '#e7e7e7',height:2}}>
-          <PopularTab tabLabel="Java">Java</PopularTab>
-          <PopularTab tabLabel="IOS">IOS</PopularTab>
-          <PopularTab tabLabel="Android">Android</PopularTab>
-          <PopularTab tabLabel="JavaScript">JavaScript</PopularTab>
-        </ScrollableTabView>
+        <Text style={styles.header}>GithubTrending Test</Text>
+        <TextInput style={{height:30, borderWidth:1}}
+                            onChangeText={(text)=> {
+                                this.text = text;
+                            }}
+        />
+        <View style={{flexDirection: 'row'}}>
+            <Text style={styles.text} onPress={()=>this.onLoad()}>
+                Load data
+            </Text>
+            <Text style={{flex:1}}>{this.state.result}</Text>
+        </View>
         
       </View>
     );
@@ -41,7 +52,7 @@ export default class HomePage extends Component {
 class PopularTab extends Component {
   constructor(props) {
     super(props);
-    this.dataRepository = new DataRepository("popular");
+    this.dataRepository = new DataRepository();
     this.state = {
       text: '', 
       data: '',
