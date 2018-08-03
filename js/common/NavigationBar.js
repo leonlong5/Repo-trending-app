@@ -24,20 +24,10 @@ export default class NavigationBar extends React.Component {
         }
         
         <Text style={styles.title}>{this.props.title}</Text>
-        {
-          !this.props.RightButton && 
-          <Text style={styles.btnRight}></Text>
-        }
+
         {
           this.props.RightButton && 
-        <Button 
-            style={styles.btnRight}
-            title = "Save"
-            onPress = { () => {
-                //button go back to homepage
-                navigation.goBack();
-            }}
-        />
+          this.props.RightButton
         }
       </View>
     );

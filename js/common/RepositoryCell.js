@@ -4,12 +4,41 @@ import { StyleSheet, Text, View, Image, Button, TextInput, TouchableOpacity} fro
 export default class RepositoryCell extends Component {
     constructor(props) {
       super(props);
-      this.state = {};
+      this.state = {
+          isFavorite: false,
+          favoriteIcon:require('../../res/images/ic_unstar_transparent.png')
+      };
     }
-    
-  
+    setFavoriteState(isFavorite){
+        this.setState({
+            isFavorite: isFavorite,
+            favoriteIcon: isFavorite?require('../../res/images/ic_star.png'):require('../../res/images/ic_unstar_transparent.png')
+        })
+    }
+    onPressFavorite(){
+        this.setFavoriteState(!this.state.isFavorite)
+        onSave()
+    }
+    onSave(){
+        try {
+            AsyncStorage.setItem('keys', JSON.stringify(this.state.dataArray));
+            const { navigation } = this.props;
+            navigation.goBack()
+        } catch (error) {
+            // Error saving data
+            console.log(error)
+        }
+    }
     render() {
       const data= this.props.data.item;
+      let favoriteButton = <TouchableOpacity
+        onPress={()=>this.onPressFavorite()}
+      >
+          <Image
+            style={[{height:22, width:22},{tintColor: "#2196F3"}]}
+            source={this.state.favoriteIcon}
+          />
+      </TouchableOpacity>
       return (
           <TouchableOpacity style={styles.container}>
             <View style={styles.item} id={data.id}>
@@ -27,7 +56,7 @@ export default class RepositoryCell extends Component {
                         <Text>Stars:</Text>
                         <Text style={styles.text}>{data.stargazers_count}</Text>
                     </View>
-                    <Image style={styles.star} source={require('../../res/images/ic_star.png')}/>
+                    {favoriteButton}
                 </View>
             </View>
         </TouchableOpacity>

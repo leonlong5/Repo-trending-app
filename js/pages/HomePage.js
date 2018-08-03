@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import { StyleSheet, Text, View, Button, TextInput,ScrollView, FlatList, RefreshControl, ActivityIndicator, SwipeableFlatList, TouchableHighlight} from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput,ScrollView, FlatList, RefreshControl, AsyncStorage, SwipeableFlatList, TouchableHighlight} from 'react-native';
 import DataRepository from '../expand/dao/DataRepository'
 import ScrollableTabView, {ScrollableTabBar} from 'react-native-scrollable-tab-view'
 import RepositoryCell from '../common/RepositoryCell'
@@ -12,9 +12,27 @@ export default class HomePage extends Component {
     this.state = {
       text: '', 
       data: '',
+      dataArray: []
     };
   }
-
+  _retrieveData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('keys');
+      
+      if (value == null) {
+        // if the first time, no data in storage
+          value = keysData
+      }
+      this.setState({
+        dataArray: JSON.parse(value)
+      })
+     } catch (error) {
+       // Error retrieving data
+     }
+  }
+  componentWillMount(){
+      this._retrieveData()
+  }
   render() {
     const navigation= this.props.navigation;
     return (
@@ -26,10 +44,15 @@ export default class HomePage extends Component {
           tabBarInactiveTextColor="mintcream" 
           tabBarActiveTextColor="white"
           tabBarUnderlineStyle={{backgroundColor: '#e7e7e7',height:2}}>
-          <PopularTab tabLabel="Java">Java</PopularTab>
-          <PopularTab tabLabel="IOS">IOS</PopularTab>
-          <PopularTab tabLabel="Android">Android</PopularTab>
-          <PopularTab tabLabel="JavaScript">JavaScript</PopularTab>
+          <PopularTab tabLabel="All">All</PopularTab>
+          {this.state.dataArray.map((obj, i, arr)=>{
+              
+              var result;
+              if (obj.checked){
+                result = <PopularTab key={i} tabLabel={obj.name}>name</PopularTab>
+              }
+              return result
+          })}
         </ScrollableTabView>
         
       </View>

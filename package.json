@@ -23,6 +23,8 @@
     "expo": "^27.0.1",
     "react": "16.3.1",
     "react-native": "~0.55.2",
+    "react-native-check-box": "^2.1.0",
+    "react-native-elements": "^0.19.1",
     "react-native-htmlview": "^0.12.1",
     "react-native-popover": "^0.2.0",
     "react-native-popover-view": "^1.0.0",
