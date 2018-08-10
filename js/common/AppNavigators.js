@@ -45,7 +45,7 @@ export const AppTabNavigator = createBottomTabNavigator({
     List: {
         screen: List,
         navigationOptions:{
-            tabBarLabel: 'List',
+            tabBarLabel: 'Like',
             tabBarIcon: ({tintColor, focused})=>(
                 <Ionicons
                     name = {focused ? 'ios-list' : 'ios-list-outline'}

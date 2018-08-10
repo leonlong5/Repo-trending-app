@@ -11,16 +11,25 @@ export default class List extends React.Component {
       dataArray: []
     }
   }
-  
   componentDidMount() {
-    let list =AsyncStorage.getItem('likeList')
-    list.then((result)=>{
-      console.log(result)
-      this.setState({
-        isReady: false,
-        dataArray: JSON.parse(result)
-      });
-    })
+
+    //listener for nav button focus
+    this.didFocusListener = this.props.navigation.addListener(
+      'didFocus',
+      () => {     
+        let list =AsyncStorage.getItem('likeList')
+        list.then((result)=>{
+          console.log(result)
+          this.setState({
+            isReady: false,
+            dataArray: JSON.parse(result)
+          });
+        }) },
+    );
+  }
+
+  componentWillUnmount() {
+    this.didFocusListener.remove();
   }
 
   _renderItem(data) {
@@ -119,6 +128,9 @@ export default class List extends React.Component {
               this.setState({
                 dataArray: updatedArray
               })
+              AsyncStorage.setItem('likeList', JSON.stringify(updatedArray)).then(() => {
+                console.log('likeList updated.')
+              });
             }}
           />
         </View>
@@ -134,11 +146,9 @@ export default class List extends React.Component {
     }
     return (
       <View>
-        <TouchableOpacity onPress = {() => this.props.navigation.goBack()}>
-                    <View style = {styles.nav}>
-                        <Text style = {{color: 'white'}}>Go back</Text>
-                    </View>
-        </TouchableOpacity>
+        <View style = {styles.nav}>
+            <Text style = {{color: 'white'}}>Like list</Text>
+        </View>
         {/* {console.log(this.state.dataArray)} */}
         <SwipeableFlatList
           //data source of the flatlist
@@ -164,13 +174,6 @@ export default class List extends React.Component {
           }
           renderQuickActions={(rowData) => this.genQuickAction(rowData)}
           maxSwipeDistance= {100}
-        />
-        <Button 
-            title = "Go Back"
-            onPress = { () => {
-                //button go back to homepage
-                navigation.goBack();
-            }}
         />
       </View>
     );
