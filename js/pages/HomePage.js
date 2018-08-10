@@ -32,6 +32,7 @@ export default class HomePage extends Component {
   }
   componentWillMount(){
       this._retrieveData()
+      AsyncStorage.setItem("likeList", JSON.stringify([]));
   }
   render() {
     const navigation= this.props.navigation;

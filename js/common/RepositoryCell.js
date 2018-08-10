@@ -1,12 +1,13 @@
 import React,{Component} from 'react';
-import { StyleSheet, Text, View, Image, Button, TextInput, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, Image, Button, TextInput, TouchableOpacity, AsyncStorage} from 'react-native';
 
 export default class RepositoryCell extends Component {
     constructor(props) {
       super(props);
       this.state = {
           isFavorite: false,
-          favoriteIcon:require('../../res/images/ic_unstar_transparent.png')
+          dataArray: [],
+          favoriteIcon:require('../../res/images/ic_unstar_transparent.png'),
       };
     }
     setFavoriteState(isFavorite){
@@ -17,18 +18,35 @@ export default class RepositoryCell extends Component {
     }
     onPressFavorite(){
         this.setFavoriteState(!this.state.isFavorite)
-        onSave()
+        // this._retrieveFavData()
+        this.onSaveFavorite(!this.state.isFavorite)
     }
-    onSave(){
+    onSaveFavorite = async () => {
         try {
-            AsyncStorage.setItem('keys', JSON.stringify(this.state.dataArray));
-            const { navigation } = this.props;
-            navigation.goBack()
+            const data= this.props.data.item;
+            let item = {
+                id : data.id,
+                name : data.name,
+                full_name: data.full_name,
+                description: data.description,
+                avatar_url: data.owner.avatar_url,
+                stargazers_count: data.stargazers_count
+            }
+            let likeList = await AsyncStorage.getItem('likeList') || '[]';
+            likeList = JSON.parse(likeList);
+            likeList = likeList.concat(item);
+            console.log(likeList)
+            AsyncStorage.setItem('likeList', JSON.stringify(likeList)).then(() => {
+                console.log('likeList updated.')
+            });
+            let list =AsyncStorage.getItem('likeList')
+            list.then((result)=>{console.log(result)})
         } catch (error) {
             // Error saving data
             console.log(error)
         }
     }
+
     render() {
       const data= this.props.data.item;
       let favoriteButton = <TouchableOpacity

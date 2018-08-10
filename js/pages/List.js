@@ -1,42 +1,63 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, FlatList, RefreshControl, ActivityIndicator, SwipeableFlatList, TouchableHighlight} from 'react-native';
-
-
-const CITIES = [{city: 'New York', population:8550405},
-      {city: 'Los Angeles', population:	3971883},
-      {city: 'Chicago', population: 2720546},
-      {city: 'Houston', population:	2296224},
-      {city: 'Philadelphia', population:	1567442},
-      {city: 'Phoenix', population:	1563025},
-      {city: 'San Antonio', population:	1469845},
-      {city: 'San Diego', population:	1394928},
-      {city: 'Dallas', population:	1300092},
-      {city: 'San Jose', population:	1026908},
-      {city: 'Austin', population:	931830},
-      {city: 'Jacksonville', population:	868031},
-      {city: 'San Francisco', population:	864816},
-      {city: 'Indianapolis', population:	853173},
-      {city: 'Columbus', population:	850106},
-      {city: 'Fort Worth', population:	833319},
-      {city: 'Charlotte', population:	827097},
-      {city: 'Seattle', population:	684451},
-      {city: 'Denver', population:	682545},
-      {city: 'El Paso', population:	681124}]
+import { Image, StyleSheet, Text, View, Button, FlatList, RefreshControl, ActivityIndicator, SwipeableFlatList, TouchableHighlight, AsyncStorage, TouchableOpacity} from 'react-native';
+import HTMLView from 'react-native-htmlview';
 
 export default class List extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isReady: true,
       isLoading: false,
-      dataArray: CITIES
+      dataArray: []
     }
   }
   
+  componentDidMount() {
+    let list =AsyncStorage.getItem('likeList')
+    list.then((result)=>{
+      console.log(result)
+      this.setState({
+        isReady: false,
+        dataArray: JSON.parse(result)
+      });
+    })
+  }
+
   _renderItem(data) {
-    return <View style={styles.item} id={data.item.id}>
-            <Text style={styles.text}>City: {data.item.city} ;</Text>
-            <Text style={styles.text}>Population: {data.item.population}</Text>
+    console.log(data)
+    return <TouchableOpacity style={styles.container}>
+           <View style={styles.item} id={data.id}>
+               <Text 
+                   onPress={() =>
+                       this.props.navigation.navigate('RepositoryDetail',{
+                           name: data.full_name
+                       })
+                   }
+                   style={styles.title}>{data.full_name} </Text>
+               <HTMLView
+                       value={data.description}
+                       stylesheet={{
+                           p: styles.description,
+                           a: styles.description
+                       }}
+                   />
+               <View style={styles.wrapper}>
+                   <View style={styles.info}>
+                       <Text>Author:</Text>
+                       <Image
+                               source={{url: data.avatar_url}}
+                               style={{height:22, width:22}}
+                               />
+                       
+                   </View>
+                   <View style={styles.info}>
+                       <Text>Stars:</Text>
+                       <Text style={styles.text}>{data.stargazers_count}</Text>
+                   </View>
+                   <Image style={styles.star} source={require('../../res/images/ic_star.png')}/>
+               </View>
            </View>
+       </TouchableOpacity>
   }
 
   loadData(refreshing) {
@@ -80,11 +101,26 @@ export default class List extends React.Component {
           </View>
   }
 
-  genQuickAction() {
+  genQuickAction(rowData) {
+    let item = rowData.item;
     return <View style={styles.quickContainer}>
       <TouchableHighlight>
         <View style={styles.quick}>
-          <Text>Delete</Text>
+          <Button 
+            title = "Delete"
+            onPress = { () => {
+              updatedArray = this.state.dataArray;
+              i = updatedArray.length;
+              while (i--) {
+                if (updatedArray[i].id == item.id){
+                  updatedArray.splice(i, 1);
+                }
+              }
+              this.setState({
+                dataArray: updatedArray
+              })
+            }}
+          />
         </View>
       </TouchableHighlight>
     </View>
@@ -93,26 +129,25 @@ export default class List extends React.Component {
   render() {
       //get navigation from props
     const { navigation } = this.props;
-    
+    if (this.state.isReady) {
+      return <View><Text>Loading...</Text></View>;
+    }
     return (
       <View>
-        <Text>This is list page!</Text>
-        <Button 
-            title = "Go Back"
-            onPress = { () => {
-                //button go back to homepage
-                navigation.goBack();
-            }}
-        />
+        <TouchableOpacity onPress = {() => this.props.navigation.goBack()}>
+                    <View style = {styles.nav}>
+                        <Text style = {{color: 'white'}}>Go back</Text>
+                    </View>
+        </TouchableOpacity>
+        {/* {console.log(this.state.dataArray)} */}
         <SwipeableFlatList
           //data source of the flatlist
           //you can import data directly as data = {CITIES}
           //below is from state for easier manipulation for later like refreshing loading more recent items
           data = {this.state.dataArray}
-          
           //render item method
-          renderItem = {(data) => this._renderItem(data)}
-          
+          renderItem = {(item) => this._renderItem(item.item)}
+          keyExtractor={(item, index) => index.toString()}
           //on pull down refreshing 
           refreshControl = {
             <RefreshControl
@@ -123,18 +158,11 @@ export default class List extends React.Component {
             refreshing = {this.state.isLoading}
             //refresh logic
             onRefresh = {() => {
-              this.loadData(true);
+              // this.loadData(true);
             }}  
             />
           }
-
-          // pull up loading more 
-          ListFooterComponent = {() => this.genIndicator()}
-          onEndReached={() => {
-            this.loadData()
-          }}
-
-          renderQuickActions={() => this.genQuickAction()}
+          renderQuickActions={(rowData) => this.genQuickAction(rowData)}
           maxSwipeDistance= {100}
         />
         <Button 
@@ -151,15 +179,7 @@ export default class List extends React.Component {
 
 const styles = StyleSheet.create({
   
-  item: {
-    backgroundColor: 'lightblue',
-    height: 100,
-    marginRight: 15,
-    marginLeft: 15,
-    marginBottom: 15,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
+  
   text: {
     color: 'white'
   },
@@ -174,7 +194,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginBottom: 15,
-    marginRight: 15
+    marginRight: 15,
+    marginTop: 5
   },
   quick: {
     backgroundColor: 'red',
@@ -183,5 +204,52 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 15,
     width: 200
-  }
+  },
+  item: {
+    backgroundColor: 'white',
+    padding: 10,
+    marginVertical: 3,
+    borderWidth: 0.5,
+    borderColor:"#dddddd",
+    borderRadius: 2,
+    shadowColor: 'gray',
+    shadowOffset:{width:0.5, height:0.5},
+    shadowOpacity: 0.4,
+    shadowRadius: 1,
+    elevation:2,
+    height: 150,
+    marginRight: 15,
+    marginLeft: 15,
+    marginBottom: 15,
+},
+wrapper:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10
+},
+title: {
+    fontSize: 18,
+    marginBottom: 5,
+    color:'#212121'
+},
+description: {
+    fontSize: 14,
+    marginBottom: 5,
+    color: '#757575'
+},
+info: {
+    flexDirection: "row", 
+    alignItems: 'center'
+},
+star: {
+    width: 22,
+    height:22
+},
+nav: {
+  paddingTop: 30,
+  paddingBottom:10,
+  backgroundColor: "#2196F2",
+  alignItems: 'center', 
+  justifyContent: 'center', 
+}
 });
